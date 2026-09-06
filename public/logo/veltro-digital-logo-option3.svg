@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="620" viewBox="0 0 1400 620" role="img" aria-label="Veltro Digital Forward Motion logo">
+  <rect width="1400" height="620" fill="#0F1F3D"/>
+
+  <!-- Forward-motion speed lines -->
+  <g stroke-linecap="round" fill="none">
+    <path d="M105 245 H240" stroke="#378ADD" stroke-width="12"/>
+    <path d="M80 277 H222" stroke="#FFFFFF" stroke-width="7"/>
+    <path d="M126 311 H252" stroke="#378ADD" stroke-width="11"/>
+    <path d="M92 345 H208" stroke="#EF9F27" stroke-width="9"/>
+  </g>
+
+  <!-- Layered forward chevrons -->
+  <path d="M230 210 L286 210 L392 310 L286 410 L230 410 L336 310 Z" fill="#378ADD"/>
+  <path d="M280 210 L332 210 L438 310 L332 410 L280 410 L386 310 Z" fill="#FFFFFF"/>
+
+  <!-- Wordmark -->
+  <text x="470" y="316"
+        font-family="Inter, Arial, Helvetica, sans-serif"
+        font-size="142"
+        font-weight="800"
+        letter-spacing="3"
+        fill="#FFFFFF">VELTRO</text>
+
+  <text x="520" y="407"
+        font-family="Inter, Arial, Helvetica, sans-serif"
+        font-size="64"
+        font-weight="500"
+        letter-spacing="28"
+        fill="#378ADD">DIGITAL</text>
+
+  <!-- Tagline with side rails -->
+  <line x1="115" y1="495" x2="200" y2="495" stroke="#EF9F27" stroke-width="5"/>
+  <text x="700" y="512"
+        text-anchor="middle"
+        font-family="Inter, Arial, Helvetica, sans-serif"
+        font-size="38"
+        font-weight="600"
+        font-style="italic"
+        fill="#FFFFFF">Smarter websites for serious businesses</text>
+  <line x1="1198" y1="495" x2="1283" y2="495" stroke="#EF9F27" stroke-width="5"/>
+</svg>

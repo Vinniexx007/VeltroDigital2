@@ -1,26 +1,84 @@
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* Brand colours */
+  --color-navy: #0F1F3D;
+  --color-navy-dark: #080F1E;
+  --color-navy-light: #1A3260;
+  --color-blue: #378ADD;
+  --color-blue-light: #5EA3E8;
+  --color-blue-dark: #2565AD;
+  --color-grey: #F5F7FA;
+  --color-grey-dark: #E2E6ED;
+  --color-amber: #EF9F27;
+  --color-amber-light: #F4B84A;
+  --color-amber-dark: #C97D0E;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Font families */
+  --font-sans: var(--font-inter), Arial, Helvetica, sans-serif;
+  --font-display: var(--font-inter), Arial, Helvetica, sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Font sizes */
+  --font-size-body: 1rem;
+  --line-height-body: 1.75;
+  --font-size-body-lg: 1.125rem;
+  --line-height-body-lg: 1.75;
+  --font-size-h4: 1.25rem;
+  --line-height-h4: 1.4;
+  --font-size-h3: 1.5rem;
+  --line-height-h3: 1.35;
+  --font-size-h2: 2rem;
+  --line-height-h2: 1.25;
+  --font-size-h1-mobile: 2.25rem;
+  --line-height-h1-mobile: 1.2;
+  --font-size-h1: 3rem;
+  --line-height-h1: 1.15;
+  --font-size-hero: 3.5rem;
+  --line-height-hero: 1.1;
+
+  /* Spacing */
+  --spacing-section: 5rem;
+  --spacing-section-sm: 3rem;
+
+  /* Max widths */
+  --max-width-content: 1200px;
+  --max-width-prose: 680px;
+
+  /* Border radius */
+  --radius-card: 0.75rem;
+  --radius-btn: 0.5rem;
+
+  /* Shadows */
+  --shadow-card: 0 2px 12px rgba(15, 31, 61, 0.08);
+  --shadow-card-hover: 0 8px 32px rgba(15, 31, 61, 0.16);
+
+  /* Animations */
+  --animate-fade-in: fadeIn 0.4s ease-out forwards;
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }

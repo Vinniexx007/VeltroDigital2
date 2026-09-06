@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Veltro Digital
 
-## Getting Started
+Marketing website for Veltro Digital — a Next.js (App Router) site with five pages
+(Home, Services, About, Work, Contact), statically generated, styled with Tailwind
+CSS, and delivering contact enquiries via [Resend](https://resend.com). Deployed to
+Vercel.
 
-First, run the development server:
+## Development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install        # install dependencies
+npm run dev        # start the dev server at http://localhost:3000
+npm test           # run Vitest unit and property-based tests
+npm run test:e2e   # run Playwright end-to-end tests
+npm run build      # production build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Copy `.env.example` to `.env.local` and fill in the values before running the
+contact form locally:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Using `RESEND_API_KEY=test` in development or CI triggers a mock send path, so no
+real email is dispatched.
 
-## Learn More
+## Performance (Lighthouse CI)
 
-To learn more about Next.js, take a look at the following resources:
+Performance is enforced with [Lighthouse CI](https://github.com/GoogleChrome/lighthouse-ci)
+against a budget of a 90+ performance score (Requirement 17.1). Accessibility is
+also checked at 90+ as a warning.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run lighthouse   # production build, then run Lighthouse CI against all 5 pages
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The `lighthouse` script runs `npm run build` first because `lhci autorun` starts
+the production server (`npm run start`), which requires an existing build. It
+audits Home, Services, About, Work, and Contact using the `desktop` preset. A
+performance score below 0.9 fails the run (`error`); accessibility below 0.9 only
+warns. This is intended to run in CI; it needs Chrome and is slow to run locally.
 
-## Deploy on Vercel
+## Environment Variables
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Variable               | Required | Description                                                    |
+| ---------------------- | -------- | -------------------------------------------------------------- |
+| `RESEND_API_KEY`       | Yes      | Resend API key used by the contact form to send enquiry emails. |
+| `NEXT_PUBLIC_SITE_URL` | Yes      | Public site URL (e.g. `https://www.veltrodigital.co.uk`).       |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Never commit real values. `.env.local` is gitignored; `.env.example` holds
+placeholders only.
+
+## Deployment (Vercel)
+
+No additional Vercel configuration is required beyond the environment variables —
+this is a standard Next.js App Router app.
+
+1. Connect the repository to Vercel (import the project from your Git provider).
+2. In the Vercel project settings, add the environment variables above:
+   - `RESEND_API_KEY` — your real Resend API key.
+   - `NEXT_PUBLIC_SITE_URL` — `https://www.veltrodigital.co.uk`.
+3. Deploy. Vercel auto-detects Next.js; no `vercel.json` is needed.
