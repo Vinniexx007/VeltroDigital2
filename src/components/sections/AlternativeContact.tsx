@@ -1,24 +1,40 @@
-/** Social profiles — URLs reused from the site footer. */
-const SOCIAL_LINKS: { label: string; href: string; ariaLabel: string }[] = [
+import Image from 'next/image'
+
+/**
+ * Social profiles. Each renders its brand logo as the link content, with the
+ * hyperlink preserved and an accessible name provided via `aria-label` (the
+ * decorative logo image itself carries an empty alt). Logo assets live in
+ * `public/images/social` (96×96 PNGs).
+ */
+const SOCIAL_LINKS: {
+  label: string
+  href: string
+  ariaLabel: string
+  icon: string
+}[] = [
   {
     label: 'Facebook',
     href: 'https://facebook.com/veltrodigital',
     ariaLabel: 'Veltro Digital on Facebook',
+    icon: '/images/social/facebook.png',
   },
   {
     label: 'Instagram',
     href: 'https://instagram.com/veltrodigital',
     ariaLabel: 'Veltro Digital on Instagram',
+    icon: '/images/social/instagram.png',
   },
   {
     label: 'X (Twitter)',
     href: 'https://x.com/veltrodigital',
     ariaLabel: 'Veltro Digital on X',
+    icon: '/images/social/x.png',
   },
   {
     label: 'WhatsApp',
     href: 'https://wa.me/447424158513',
     ariaLabel: 'Message Veltro Digital on WhatsApp',
+    icon: '/images/social/whatsapp.png',
   },
 ]
 
@@ -82,8 +98,8 @@ export default function AlternativeContact() {
 
         <div>
           <dt className="text-h4 font-semibold text-navy">Follow Us</dt>
-          <dd className="mt-2">
-            <ul className="flex flex-wrap gap-x-6 gap-y-2">
+          <dd className="mt-3">
+            <ul className="flex flex-wrap items-center gap-4">
               {SOCIAL_LINKS.map((social) => (
                 <li key={social.label}>
                   <a
@@ -91,9 +107,15 @@ export default function AlternativeContact() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={social.ariaLabel}
-                    className="text-blue-dark hover:text-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber"
+                    className="inline-flex h-11 w-11 items-center justify-center rounded-btn transition-transform hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber focus-visible:ring-offset-2"
                   >
-                    {social.label}
+                    <Image
+                      src={social.icon}
+                      alt=""
+                      width={40}
+                      height={40}
+                      className="h-10 w-10 object-contain"
+                    />
                   </a>
                 </li>
               ))}
