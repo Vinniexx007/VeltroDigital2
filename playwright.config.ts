@@ -30,5 +30,10 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    // Run the built server in test mode so the contact form Server Action
+    // short-circuits to success without calling Resend or sending real email.
+    // Without this, submitEnquiry correctly treats a missing key as a failure
+    // (the fix for the "confirms sent but nothing received" bug).
+    env: { RESEND_API_KEY: 'test' },
   },
 })

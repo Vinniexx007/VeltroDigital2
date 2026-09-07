@@ -6,6 +6,10 @@ import { buildEmailSubject, buildEmailTemplate } from '@/lib/contact/email-templ
 import type { EnquiryPayload, EnquiryResult } from '@/lib/contact/types'
 import { validateEnquiry } from '@/lib/contact/validate'
 
+/** User-safe failure message shown when an enquiry cannot be delivered. */
+const SEND_FAILURE_MESSAGE =
+  "We couldn't send your message. Please contact us directly via WhatsApp or email."
+
 /**
  * Read a single form field and coerce it to a string. A missing field
  * (`FormData.get` returns `null`) or a `File` value becomes an empty string, so
@@ -57,13 +61,22 @@ export async function submitEnquiry(formData: FormData): Promise<EnquiryResult> 
     }
   }
 
-  // 4. TEST MODE. When RESEND_API_KEY is the literal 'test' or is unset/empty,
-  // skip the real Resend call and report success. This lets CI and E2E runs
-  // exercise the full validation + submission flow without sending real email
-  // or requiring a live API key.
+  // 4. TEST MODE. Only the literal 'test' key skips the real Resend call, so CI
+  // and E2E runs can exercise the full validation + submission flow without
+  // sending real email. A MISSING key is treated as a misconfiguration (see
+  // below) rather than a silent success — otherwise a deployment without the
+  // env var would confirm "sent" to users while delivering nothing.
   const apiKey = process.env.RESEND_API_KEY
-  if (!apiKey || apiKey === 'test') {
+  if (apiKey === 'test') {
     return { success: true }
+  }
+
+  // A real (non-test) send requires a configured key. If it's missing we must
+  // NOT report success — that was the original bug: users saw "message sent"
+  // while nothing was delivered.
+  if (!apiKey) {
+    console.error('Enquiry send failed: RESEND_API_KEY is not configured')
+    return { success: false, error: SEND_FAILURE_MESSAGE }
   }
 
   // 5. Real send.
@@ -72,24 +85,42 @@ export async function submitEnquiry(formData: FormData): Promise<EnquiryResult> 
     const subject = buildEmailSubject(payload)
 
     const resend = new Resend(apiKey)
-    await resend.emails.send({
-      from: 'noreply@veltrodigital.co.uk',
+
+    // Resend reports API-level failures (e.g. an unverified sending domain) via
+    // the returned `error` object rather than by throwing. We MUST inspect it —
+    // a non-null `error` means the email was NOT delivered, so treat it as a
+    // failure instead of returning a false success.
+    const { data, error } = await resend.emails.send({
+      from: 'Veltro Digital <hello@veltrodigital.co.uk>',
       to: 'hello@veltrodigital.co.uk',
       replyTo: payload.email,
       subject,
       html,
     })
 
-    // 6. Success.
+    if (error) {
+      // Log the provider's error name/message only — never the API key or the
+      // full request. This surfaces causes like "domain not verified" in logs.
+      console.error(
+        `Enquiry send failed: ${error.name ?? 'unknown_error'} — ${error.message ?? 'no message'}`,
+      )
+      return { success: false, error: SEND_FAILURE_MESSAGE }
+    }
+
+    if (!data?.id) {
+      // Defensive: a success response should carry an email id. If it doesn't,
+      // we can't confirm delivery, so don't claim success.
+      console.error('Enquiry send failed: Resend returned no email id')
+      return { success: false, error: SEND_FAILURE_MESSAGE }
+    }
+
+    // 6. Success — the provider accepted the message for delivery.
     return { success: true }
   } catch {
-    // 7. Log only a safe, static message. The caught error may contain the API
-    // key, tokens, or other secrets, so it is never logged or returned.
-    console.error('Enquiry send failed')
-    return {
-      success: false,
-      error:
-        "We couldn't send your message. Please contact us directly via WhatsApp or email.",
-    }
+    // 7. Network/unexpected error. Log only a safe, static message. The caught
+    // error may contain the API key or other secrets, so it is never logged or
+    // returned.
+    console.error('Enquiry send failed: unexpected error calling Resend')
+    return { success: false, error: SEND_FAILURE_MESSAGE }
   }
 }
