@@ -86,13 +86,22 @@ export async function submitEnquiry(formData: FormData): Promise<EnquiryResult> 
 
     const resend = new Resend(apiKey)
 
+    // The `from` address MUST be on a domain verified in Resend, otherwise the
+    // send is rejected. It's configurable via CONTACT_FROM_EMAIL so the sending
+    // domain can change (e.g. a verified subdomain) without a code change; the
+    // default targets the verified `contact.` subdomain. The recipient inbox is
+    // separately configurable via CONTACT_TO_EMAIL and need not be verified.
+    const fromEmail =
+      process.env.CONTACT_FROM_EMAIL ?? 'Veltro Digital <hello@contact.veltrodigital.co.uk>'
+    const toEmail = process.env.CONTACT_TO_EMAIL ?? 'hello@veltrodigital.co.uk'
+
     // Resend reports API-level failures (e.g. an unverified sending domain) via
     // the returned `error` object rather than by throwing. We MUST inspect it —
     // a non-null `error` means the email was NOT delivered, so treat it as a
     // failure instead of returning a false success.
     const { data, error } = await resend.emails.send({
-      from: 'Veltro Digital <hello@veltrodigital.co.uk>',
-      to: 'hello@veltrodigital.co.uk',
+      from: fromEmail,
+      to: toEmail,
       replyTo: payload.email,
       subject,
       html,
